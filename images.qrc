@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/add.png</file>
+        <file>images/clear.png</file>
+        <file>images/close.png</file>
+        <file>images/file.png</file>
+        <file>images/help.png</file>
+        <file>images/large.png</file>
+        <file>images/left.png</file>
+        <file>images/mesage.png</file>
+        <file>images/open.png</file>
+        <file>images/Qt.png</file>
+        <file>images/right.png</file>
+        <file>images/save.png</file>
+        <file>images/select.png</file>
+        <file>images/small.png</file>
+        <file>images/stop.png</file>
+        <file>images/toLeft.png</file>
+        <file>images/toRight.png</file>
+    </qresource>
+</RCC>
