@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QScrollArea>
 #include <QGridLayout>
+#include <QImageReader>
+#include <QErrorMessage>
 
 QImageViewer::QImageViewer(QWidget *parent) : QMainWindow(parent)
 {
@@ -17,12 +19,14 @@ QImageViewer::QImageViewer(QWidget *parent) : QMainWindow(parent)
 
     /* init ui */
     initUiComponent();
+
+    //qDebug() << QImageReader::supportedImageFormats();
 }
 
 void QImageViewer::openActionTriggered(void)
 {
     filename = QFileDialog::getOpenFileName(this, tr("Select image:"),
-        "D:\\Documents\\Pictures", tr("Images (*.png *.bmp *.jpg *.gif)"));
+        "D:\\Documents\\Pictures", tr("Images (*.jpg *.jpeg *.png *.bmp *.gif)"));
     if (filename.isEmpty()) {
         return ;
     }
@@ -45,6 +49,7 @@ void QImageViewer::openActionTriggered(void)
     toRightAction->setEnabled(1);
     toEnlargeAction->setEnabled(1);
     toLessenAction->setEnabled(1);
+    deleteAction->setEnabled(1);
 
     path = QFileInfo(filename).absolutePath();
     getImgInfoList(imgInfoList);
@@ -64,22 +69,33 @@ void QImageViewer::closeActionTriggered(void)
     toRightAction->setEnabled(0);
     toEnlargeAction->setEnabled(0);
     toLessenAction->setEnabled(0);
+    deleteAction->setEnabled(0);
 }
 
 void QImageViewer::lastActionTriggered(void)
 {
-    index = index - 1;
-    int count = imgInfoList.count();
-    //qDebug() << "left count: " << count << "index: " << index;
-    if (index < 0) {
-        index = count - 1;
-    }
+    while (1) {
+        index = index - 1;
+        int count = imgInfoList.count();
+        //qDebug() << "left count: " << count << "index: " << index;
+        if (index < 0) {
+            QMessageBox::information(this, tr("Tip"), tr("This is the first image."));
+            index = count - 1;
+        }
 
-    filename.clear();
-    filename.append(path);
-    filename += "/";
-    filename += imgInfoList.at(index).fileName();
-    //qDebug() << "filname: " << filename;
+        filename.clear();
+        filename.append(path);
+        filename += "/";
+        filename += imgInfoList.at(index).fileName();
+        //qDebug() << "filname: " << filename;
+
+        if (!QFile(filename).exists()) {
+            imgInfoList.removeAt(index);
+            continue;
+        } else {
+            break;
+        }
+    }
 
     QImage image;
     if (!image.load(filename)) {
@@ -92,6 +108,13 @@ void QImageViewer::lastActionTriggered(void)
 
     imageLabel->setPixmap(pixmap);
     imageLabel->resize(imageSize);
+
+    closeAction->setEnabled(1);
+    toLeftAction->setEnabled(1);
+    toRightAction->setEnabled(1);
+    toEnlargeAction->setEnabled(1);
+    toLessenAction->setEnabled(1);
+    deleteAction->setEnabled(1);
 
     setWindowTitle(QFileInfo(filename).fileName() + tr(" - QImageViewer"));
 }
@@ -100,18 +123,28 @@ void QImageViewer::nextActionTriggered(void)
 {
     //getImgInfoList(imgInfoList);
 
-    index = index + 1;
-    int count = imgInfoList.count();
-    //qDebug() << "right count: " << count << "index: " << index;
-    if (index == count) {
-        index = 0;
-    }
+    while (1) {
+        index = index + 1;
+        int count = imgInfoList.count();
+        //qDebug() << "right count: " << count << "index: " << index;
+        if (index == count) {
+            QMessageBox::information(this, tr("Tip"), tr("This is the last image."));
+            index = 0;
+        }
 
-    filename.clear();
-    filename.append(path);
-    filename += "/";
-    filename += imgInfoList.at(index).fileName();
-    //qDebug() << "filname: " << filename;
+        filename.clear();
+        filename.append(path);
+        filename += "/";
+        filename += imgInfoList.at(index).fileName();
+        //qDebug() << "filname: " << filename;
+
+        if (!QFile(filename).exists()) {
+            imgInfoList.removeAt(index);
+            continue;
+        } else {
+            break;
+        }
+    }
 
     QImage image;
     if (!image.load(filename)) {
@@ -124,6 +157,13 @@ void QImageViewer::nextActionTriggered(void)
 
     imageLabel->setPixmap(pixmap);
     imageLabel->resize(imageSize);
+
+    closeAction->setEnabled(1);
+    toLeftAction->setEnabled(1);
+    toRightAction->setEnabled(1);
+    toEnlargeAction->setEnabled(1);
+    toLessenAction->setEnabled(1);
+    deleteAction->setEnabled(1);
 
     setWindowTitle(QFileInfo(filename).fileName() + tr(" - QImageViewer"));
 }
@@ -218,6 +258,28 @@ void QImageViewer::toLessenActionTriggered(void)
     imageLabel->resize(imageSize);
 }
 
+void QImageViewer::deleteActionTriggered(void)
+{
+    qDebug() << "remove: " << filename;
+
+    if (QFile::remove(filename)) {
+        qDebug() << "remove success: " << filename;
+    } else {
+        qDebug() << "remove failed: " << filename;
+    }
+
+    imageLabel->clear();
+    imageLabel->resize(QSize(200, 100));
+    setWindowTitle(tr("QImageViewer"));
+
+    closeAction->setEnabled(0);
+    toLeftAction->setEnabled(0);
+    toRightAction->setEnabled(0);
+    toEnlargeAction->setEnabled(0);
+    toLessenAction->setEnabled(0);
+    deleteAction->setEnabled(0);
+}
+
 void QImageViewer::getImgInfoList(QFileInfoList &imgInfoList)
 {
     imgInfoList.clear();
@@ -232,7 +294,8 @@ void QImageViewer::getImgInfoList(QFileInfoList &imgInfoList)
         //qDebug() << i << info.absolutePath();
         QString suffix = info.suffix();
 
-        if (suffix == "jpg" || suffix == "bmp" || suffix == "png") {
+        if (suffix == "jpg" || suffix == "bmp" || suffix == "png"
+            || suffix == "gif" || suffix == "jpeg") {
             imgInfoList.append(info);
             //qDebug() << "getImgInfoList:" << i << info.absolutePath() << info.suffix();
         }
@@ -327,11 +390,18 @@ void QImageViewer::setWindowComponet(void)
     imageListMenu->addAction(imageListAction);
 #endif
 
+    deleteAction = new QAction(tr("Delete"), this);
+    deleteAction->setStatusTip(tr("Delete a image"));
+    deleteAction->setIcon(QIcon(":/images/clear.png"));
+    deleteAction->setShortcut(QKeySequence::Delete);
+    deleteAction->setEnabled(0);
+
     QMenu *fileMenu = menuBar->addMenu(tr("&File"));
     fileMenu->addAction(openAction);
     fileMenu->addAction(closeAction);
     fileMenu->addSeparator();
     //fileMenu->addMenu(imageListMenu);
+    fileMenu->addAction(deleteAction);
 
     QMenu *operationMenu = menuBar->addMenu(tr("Operate"));
     operationMenu->addAction(lastAction);
@@ -354,6 +424,7 @@ void QImageViewer::setWindowComponet(void)
     toolBar->addAction(toRightAction);
     toolBar->addAction(toEnlargeAction);
     toolBar->addAction(toLessenAction);
+    toolBar->addAction(deleteAction);
 
     connect(openAction, SIGNAL(triggered(bool)), this, SLOT(openActionTriggered()));
     connect(closeAction, SIGNAL(triggered(bool)), this, SLOT(closeActionTriggered()));
@@ -363,6 +434,7 @@ void QImageViewer::setWindowComponet(void)
     connect(toRightAction, SIGNAL(triggered(bool)), this, SLOT(toRightActionTriggered()));
     connect(toEnlargeAction, SIGNAL(triggered(bool)), this, SLOT(toEnlargeActionTriggered()));
     connect(toLessenAction, SIGNAL(triggered(bool)), this, SLOT(toLessenActionTriggered()));
+    connect(deleteAction, SIGNAL(triggered(bool)), this, SLOT(deleteActionTriggered()));
 }
 
 void QImageViewer::initUiComponent(void)
