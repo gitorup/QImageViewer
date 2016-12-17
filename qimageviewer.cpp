@@ -14,23 +14,32 @@
 
 QImageViewer::QImageViewer(QWidget *parent) : QMainWindow(parent)
 {
+    setWindowIcon(QIcon(":/images/add.png"));
+
     /* init main window */
     initMainWindow();
 
     /* init ui */
     initUiComponent();
 
+    /* init resource */
+    initImageResource();
+
     //qDebug() << QImageReader::supportedImageFormats();
 }
 
-void QImageViewer::openActionTriggered(void)
+void QImageViewer::initImageResource(void)
 {
-    filename = QFileDialog::getOpenFileName(this, tr("Select image:"),
-        "D:\\Documents\\Pictures", tr("Images (*.jpg *.jpeg *.png *.bmp *.gif)"));
-    if (filename.isEmpty()) {
-        return ;
-    }
+    index = -1;
+    filename.clear();
 
+    imageLabel->clear();
+    imageLabel->resize(QSize(200, 100));
+    setWindowTitle(tr("QImageViewer"));
+}
+
+void QImageViewer::loadImageResource(QString &filename)
+{
     QImage image;
     if (!image.load(filename)) {
         QMessageBox::information(this, tr("Error"), tr("Open file error"));
@@ -44,36 +53,36 @@ void QImageViewer::openActionTriggered(void)
     imageLabel->resize(imageSize);
     //qDebug() << "filname: " << filename;
 
-    closeAction->setEnabled(1);
-    toLeftAction->setEnabled(1);
-    toRightAction->setEnabled(1);
-    toEnlargeAction->setEnabled(1);
-    toLessenAction->setEnabled(1);
-    deleteAction->setEnabled(1);
-
     path = QFileInfo(filename).absolutePath();
     getImgInfoList(imgInfoList);
     setWindowTitle(QFileInfo(filename).fileName() + tr(" - QImageViewer"));
 }
 
+void QImageViewer::openActionTriggered(void)
+{
+    filename = QFileDialog::getOpenFileName(this, tr("Select image:"),
+        "D:\\Documents\\Pictures", tr("Images (*.jpg *.jpeg *.png *.bmp *.gif)"));
+    if (filename.isEmpty()) {
+        return ;
+    }
+
+    loadImageResource(filename);
+}
+
 void QImageViewer::closeActionTriggered(void)
 {
-    imageLabel->clear();
-    imageLabel->resize(QSize(200, 100));
-    setWindowTitle(tr("QImageViewer"));
-
-    closeAction->setEnabled(0);
-    lastAction->setEnabled(0);
-    nextAction->setEnabled(0);
-    toLeftAction->setEnabled(0);
-    toRightAction->setEnabled(0);
-    toEnlargeAction->setEnabled(0);
-    toLessenAction->setEnabled(0);
-    deleteAction->setEnabled(0);
+    initImageResource();
 }
 
 void QImageViewer::lastActionTriggered(void)
 {
+    if (index < 0) {
+        QMessageBox::information(this,
+                                 tr("Error"),
+                                 tr("Open a image, please!"));
+        return ;
+    }
+
     while (1) {
         index = index - 1;
         int count = imgInfoList.count();
@@ -97,31 +106,17 @@ void QImageViewer::lastActionTriggered(void)
         }
     }
 
-    QImage image;
-    if (!image.load(filename)) {
-        QMessageBox::information(this, tr("Error"), tr("Open file error"));
-        return ;
-    }
-
-    QPixmap pixmap = QPixmap::fromImage(image);
-    imageSize = pixmap.size();
-
-    imageLabel->setPixmap(pixmap);
-    imageLabel->resize(imageSize);
-
-    closeAction->setEnabled(1);
-    toLeftAction->setEnabled(1);
-    toRightAction->setEnabled(1);
-    toEnlargeAction->setEnabled(1);
-    toLessenAction->setEnabled(1);
-    deleteAction->setEnabled(1);
-
-    setWindowTitle(QFileInfo(filename).fileName() + tr(" - QImageViewer"));
+    loadImageResource(filename);
 }
 
 void QImageViewer::nextActionTriggered(void)
 {
-    //getImgInfoList(imgInfoList);
+    if (index < 0) {
+        QMessageBox::information(this,
+                                 tr("Error"),
+                                 tr("Open a image, please!"));
+        return ;
+    }
 
     while (1) {
         index = index + 1;
@@ -146,30 +141,18 @@ void QImageViewer::nextActionTriggered(void)
         }
     }
 
-    QImage image;
-    if (!image.load(filename)) {
-        QMessageBox::information(this, tr("Error"), tr("Open file error"));
-        return ;
-    }
-
-    QPixmap pixmap = QPixmap::fromImage(image);
-    imageSize = pixmap.size();
-
-    imageLabel->setPixmap(pixmap);
-    imageLabel->resize(imageSize);
-
-    closeAction->setEnabled(1);
-    toLeftAction->setEnabled(1);
-    toRightAction->setEnabled(1);
-    toEnlargeAction->setEnabled(1);
-    toLessenAction->setEnabled(1);
-    deleteAction->setEnabled(1);
-
-    setWindowTitle(QFileInfo(filename).fileName() + tr(" - QImageViewer"));
+    loadImageResource(filename);
 }
 
 void QImageViewer::toLeftActionTriggered(void)
 {
+    if (filename.isEmpty()) {
+        QMessageBox::information(this,
+                                 tr("Error"),
+                                 tr("Open a image, please!"));
+        return ;
+    }
+
     QImage imgRotate;
     QMatrix matrix;
     QPixmap pixmap;
@@ -191,6 +174,13 @@ void QImageViewer::toLeftActionTriggered(void)
 
 void QImageViewer::toRightActionTriggered(void)
 {
+    if (filename.isEmpty()) {
+        QMessageBox::information(this,
+                                 tr("Error"),
+                                 tr("Open a image, please!"));
+        return ;
+    }
+
     QImage imgRotate;
     QMatrix matrix;
     QPixmap pixmap;
@@ -212,6 +202,13 @@ void QImageViewer::toRightActionTriggered(void)
 
 void QImageViewer::toEnlargeActionTriggered(void)
 {
+    if (filename.isEmpty()) {
+        QMessageBox::information(this,
+                                 tr("Error"),
+                                 tr("Open a image, please!"));
+        return ;
+    }
+
     QImage imgScaled;
     QPixmap pixmap;
     QImage image;
@@ -236,6 +233,13 @@ void QImageViewer::toEnlargeActionTriggered(void)
 
 void QImageViewer::toLessenActionTriggered(void)
 {
+    if (filename.isEmpty()) {
+        QMessageBox::information(this,
+                                 tr("Error"),
+                                 tr("Open a image, please!"));
+        return ;
+    }
+
     QImage imgScaled;
     QPixmap pixmap;
     QImage image;
@@ -260,6 +264,13 @@ void QImageViewer::toLessenActionTriggered(void)
 
 void QImageViewer::deleteActionTriggered(void)
 {
+    if (filename.isEmpty()) {
+        QMessageBox::information(this,
+                                 tr("Error"),
+                                 tr("Open a image, please!"));
+        return ;
+    }
+
     qDebug() << "remove: " << filename;
 
     if (QFile::remove(filename)) {
@@ -271,13 +282,6 @@ void QImageViewer::deleteActionTriggered(void)
     imageLabel->clear();
     imageLabel->resize(QSize(200, 100));
     setWindowTitle(tr("QImageViewer"));
-
-    closeAction->setEnabled(0);
-    toLeftAction->setEnabled(0);
-    toRightAction->setEnabled(0);
-    toEnlargeAction->setEnabled(0);
-    toLessenAction->setEnabled(0);
-    deleteAction->setEnabled(0);
 }
 
 void QImageViewer::getImgInfoList(QFileInfoList &imgInfoList)
@@ -309,14 +313,6 @@ void QImageViewer::getImgInfoList(QFileInfoList &imgInfoList)
             //qDebug() << "curImage index:" << index;
         }
     }
-
-    if (imgInfoList.count() == 1) {
-        lastAction->setEnabled(0);
-        nextAction->setEnabled(0);
-    } else {
-        lastAction->setEnabled(1);
-        nextAction->setEnabled(1);
-    }
 }
 
 void QImageViewer::setQImageViewerWidget(void)
@@ -346,37 +342,30 @@ void QImageViewer::setWindowComponet(void)
     closeAction->setShortcut(QKeySequence::Close);
     closeAction->setStatusTip(tr("Close a image."));
     closeAction->setIcon(QIcon(":/images/close.png"));
-    closeAction->setEnabled(0);
 
     lastAction = new QAction(tr("Last"), this);
     lastAction->setStatusTip(tr("Last image."));
     lastAction->setIcon(QIcon(":/images/left.png"));
-    lastAction->setEnabled(0);
 
     nextAction = new QAction(tr("Next"), this);
     nextAction->setStatusTip(tr("Next image"));
     nextAction->setIcon(QIcon(":/images/right.png"));
-    nextAction->setEnabled(0);
 
     toLeftAction = new QAction(tr("LeftSpin"), this);
     toLeftAction->setStatusTip(tr("To Left."));
     toLeftAction->setIcon(QIcon(":/images/toLeft.png"));
-    toLeftAction->setEnabled(0);
 
     toRightAction = new QAction(tr("RightSpin"), this);
     toRightAction->setStatusTip(tr("To Right."));
     toRightAction->setIcon(QIcon(":/images/toRight.png"));
-    toRightAction->setEnabled(0);
 
     toEnlargeAction = new QAction(tr("Enlarge"), this);
     toEnlargeAction->setStatusTip(tr("To Enlarge."));
     toEnlargeAction->setIcon(QIcon(":/images/large.png"));
-    toEnlargeAction->setEnabled(0);
 
     toLessenAction = new QAction(tr("Lessen"), this);
     toLessenAction->setStatusTip(tr("To Lessen."));
     toLessenAction->setIcon(QIcon(":/images/small.png"));
-    toLessenAction->setEnabled(0);
 
     QAction *aboutQt = new QAction(tr("AboutQt"), this);
     aboutQt->setStatusTip(tr("About Qt"));
@@ -394,7 +383,6 @@ void QImageViewer::setWindowComponet(void)
     deleteAction->setStatusTip(tr("Delete a image"));
     deleteAction->setIcon(QIcon(":/images/clear.png"));
     deleteAction->setShortcut(QKeySequence::Delete);
-    deleteAction->setEnabled(0);
 
     QMenu *fileMenu = menuBar->addMenu(tr("&File"));
     fileMenu->addAction(openAction);
@@ -459,7 +447,4 @@ void QImageViewer::initMainWindow(void)
 
     statusBar = new QStatusBar(this);
     setStatusBar(statusBar);
-
-    setWindowTitle(tr("QImageViewer"));
-    setWindowIcon(QIcon(":/images/add.png"));
 }

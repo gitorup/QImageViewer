@@ -33,6 +33,8 @@ private:
     void setQImageViewerWidget(void);
     void setWindowComponet(void);
     void getImgInfoList(QFileInfoList &imgInfoList);
+    void initImageResource(void);
+    void loadImageResource(QString &filename);
 
     QAction *openAction;
     QAction *closeAction;
