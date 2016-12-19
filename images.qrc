@@ -18,5 +18,6 @@
         <file>images/toLeft.png</file>
         <file>images/toRight.png</file>
         <file>images/logo.png</file>
+        <file>images/quit.png</file>
     </qresource>
 </RCC>

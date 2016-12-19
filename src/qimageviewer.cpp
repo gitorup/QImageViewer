@@ -389,6 +389,11 @@ void QImageViewer::setWindowComponet(void)
     deleteAction->setIcon(QIcon(":/images/clear.png"));
     deleteAction->setShortcut(QKeySequence::Delete);
 
+    QAction *exitAction = new QAction(tr("Exit"), this);
+    exitAction->setStatusTip(tr("Exit"));
+    exitAction->setIcon(QIcon(":/images/quit.png"));
+    exitAction->setShortcut(QKeySequence::Quit);
+
     QAction *aboutQt = new QAction(tr("About Qt"), this);
     aboutQt->setStatusTip(tr("About Qt"));
     aboutQt->setIcon(QIcon(":/images/Qt.png"));
@@ -403,6 +408,8 @@ void QImageViewer::setWindowComponet(void)
     fileMenu->addSeparator();
     //fileMenu->addMenu(imageListMenu);
     fileMenu->addAction(deleteAction);
+    fileMenu->addSeparator();
+    fileMenu->addAction(exitAction);
 
     QMenu *operationMenu = menuBar->addMenu(tr("Operate"));
     operationMenu->addAction(lastAction);
@@ -441,6 +448,7 @@ void QImageViewer::setWindowComponet(void)
 
     connect(about, SIGNAL(triggered(bool)), this, SLOT(aboutTriggered()));
     connect(aboutQt, SIGNAL(triggered(bool)), this, SLOT(aboutQtTriggered()));
+    connect(exitAction, SIGNAL(triggered(bool)), this, SLOT(close()));
 }
 
 void QImageViewer::aboutQtTriggered(void)
