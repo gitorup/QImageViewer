@@ -9,6 +9,8 @@
 #include <QLabel>
 #include <QFileInfoList>
 
+#include "qabout.h"
+
 class QImageViewer : public QMainWindow
 {
     Q_OBJECT
@@ -21,6 +23,7 @@ private:
     QWidget *centralWidget;
     QStatusBar *statusBar;
     QLabel *imageLabel;
+    QAbout aboutWidget;
 
     int index;
     int imageAngle;
@@ -57,6 +60,8 @@ public slots:
     void toEnlargeActionTriggered(void);
     void toLessenActionTriggered(void);
     void deleteActionTriggered(void);
+    void aboutTriggered(void);
+    void aboutQtTriggered(void);
 };
 
 #endif // QIMAGEVIEWER_H

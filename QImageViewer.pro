@@ -5,11 +5,11 @@ QT += widgets
 TARGET = QImageViewer
 
 SOURCES += \
-    main.cpp \
-    qimageviewer.cpp
-
-HEADERS += \
-    qimageviewer.h
+    main.cpp
 
 RESOURCES += \
     images.qrc
+
+INCLUDEPATH += src
+
+include(src/src.pri)

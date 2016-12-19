@@ -8,6 +8,7 @@ int main(int argc, char **argv)
 
     QImageViewer imageViewer;
     imageViewer.resize(640,480);
+    imageViewer.setWindowIcon(QIcon(":/images/add.png"));
     imageViewer.show();
 
     return app.exec();

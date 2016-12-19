@@ -11,11 +11,10 @@
 #include <QGridLayout>
 #include <QImageReader>
 #include <QErrorMessage>
+#include <QApplication>
 
 QImageViewer::QImageViewer(QWidget *parent) : QMainWindow(parent)
 {
-    setWindowIcon(QIcon(":/images/add.png"));
-
     /* init main window */
     initMainWindow();
 
@@ -370,10 +369,6 @@ void QImageViewer::setWindowComponet(void)
     toLessenAction->setStatusTip(tr("To Lessen."));
     toLessenAction->setIcon(QIcon(":/images/small.png"));
 
-    QAction *aboutQt = new QAction(tr("AboutQt"), this);
-    aboutQt->setStatusTip(tr("About Qt"));
-    aboutQt->setIcon(QIcon(":/images/Qt.png"));
-
 #if 0
     QAction *imageListAction = new QAction(tr("Null"), this);
     QMenu *imageListMenu = new QMenu(tr("Image Lists"));
@@ -386,6 +381,14 @@ void QImageViewer::setWindowComponet(void)
     deleteAction->setStatusTip(tr("Delete a image"));
     deleteAction->setIcon(QIcon(":/images/clear.png"));
     deleteAction->setShortcut(QKeySequence::Delete);
+
+    QAction *aboutQt = new QAction(tr("About Qt"), this);
+    aboutQt->setStatusTip(tr("About Qt"));
+    aboutQt->setIcon(QIcon(":/images/Qt.png"));
+
+    QAction *about = new QAction(tr("About QImageViewer"), this);
+    about->setStatusTip(tr("About QImageViewer"));
+    about->setIcon(QIcon(":/images/help.png"));
 
     QMenu *fileMenu = menuBar->addMenu(tr("&File"));
     fileMenu->addAction(openAction);
@@ -404,8 +407,9 @@ void QImageViewer::setWindowComponet(void)
     operationMenu->addAction(toEnlargeAction);
     operationMenu->addAction(toLessenAction);
 
-    QMenu *aboutMenu = menuBar->addMenu(tr("About"));
-    aboutMenu->addAction(aboutQt);
+    QMenu *helpMenu = menuBar->addMenu(tr("Help"));
+    helpMenu->addAction(aboutQt);
+    helpMenu->addAction(about);
 
     toolBar->addAction(openAction);
     toolBar->addAction(closeAction);
@@ -416,6 +420,7 @@ void QImageViewer::setWindowComponet(void)
     toolBar->addAction(toEnlargeAction);
     toolBar->addAction(toLessenAction);
     toolBar->addAction(deleteAction);
+    toolBar->addAction(about);
 
     connect(openAction, SIGNAL(triggered(bool)), this, SLOT(openActionTriggered()));
     connect(closeAction, SIGNAL(triggered(bool)), this, SLOT(closeActionTriggered()));
@@ -426,6 +431,23 @@ void QImageViewer::setWindowComponet(void)
     connect(toEnlargeAction, SIGNAL(triggered(bool)), this, SLOT(toEnlargeActionTriggered()));
     connect(toLessenAction, SIGNAL(triggered(bool)), this, SLOT(toLessenActionTriggered()));
     connect(deleteAction, SIGNAL(triggered(bool)), this, SLOT(deleteActionTriggered()));
+
+    connect(about, SIGNAL(triggered(bool)), this, SLOT(aboutTriggered()));
+    connect(aboutQt, SIGNAL(triggered(bool)), this, SLOT(aboutQtTriggered()));
+}
+
+void QImageViewer::aboutQtTriggered(void)
+{
+    qApp->aboutQt();
+}
+
+void QImageViewer::aboutTriggered(void)
+{
+    aboutWidget.setWindowTitle("Help Infomation");
+    aboutWidget.setWindowIcon(QIcon(":/images/help.png"));
+    aboutWidget.setFixedSize(QABOUT_WIDGET_WIDTH, QABOUT_WIDGET_HEIGHT);
+
+    aboutWidget.show();
 }
 
 void QImageViewer::initUiComponent(void)
