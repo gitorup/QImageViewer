@@ -273,7 +273,14 @@ void QImageViewer::deleteActionTriggered(void)
         return ;
     }
 
-    qDebug() << "remove: " << filename;
+    QMessageBox message(QMessageBox::Warning,
+                        tr("Warning"),
+                        tr("Do you want to delete this image?"),
+                        QMessageBox::Yes|QMessageBox::No,
+                        NULL);
+    if (message.exec() == QMessageBox::No) {
+        return ;
+    }
 
     if (QFile::remove(filename)) {
         qDebug() << "remove success: " << filename;
