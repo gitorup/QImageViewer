@@ -42,7 +42,9 @@ void QImageViewer::loadImageResource(QString &filename)
 {
     QImage image;
     if (!image.load(filename)) {
-        QMessageBox::information(this, tr("Error"), tr("Open file error"));
+        QMessageBox::information(this,
+                                 tr("Error"),
+                                 tr("Open file error"));
         return ;
     }
 
@@ -51,10 +53,6 @@ void QImageViewer::loadImageResource(QString &filename)
 
     imageLabel->setPixmap(pixmap);
     imageLabel->resize(imageSize);
-    //qDebug() << "filname: " << filename;
-
-    path = QFileInfo(filename).absolutePath();
-    getImgInfoList(imgInfoList);
     setWindowTitle(QFileInfo(filename).fileName() + tr(" - QImageViewer"));
 }
 
@@ -66,6 +64,11 @@ void QImageViewer::openActionTriggered(void)
         return ;
     }
 
+    /* get file list */
+    path = QFileInfo(filename).absolutePath();
+    getImgInfoList(imgInfoList);
+
+    /* load image */
     loadImageResource(filename);
 }
 

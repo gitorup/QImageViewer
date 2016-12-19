@@ -20,16 +20,17 @@ private:
     QToolBar *toolBar;
     QWidget *centralWidget;
     QStatusBar *statusBar;
+    QLabel *imageLabel;
+
+    int index;
+    int imageAngle;
+    QSize imageSize;
+    QString filename;
+    QString path;
+    QFileInfoList imgInfoList;
+
     void initMainWindow(void);
     void initUiComponent(void);
-
-    QLabel *imageLabel;
-    QSize imageSize;
-    int imageAngle;
-    QString filename;
-    int index;
-    QFileInfoList imgInfoList;
-    QString path;
     void setQImageViewerWidget(void);
     void setWindowComponet(void);
     void getImgInfoList(QFileInfoList &imgInfoList);
