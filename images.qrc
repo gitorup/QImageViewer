@@ -17,5 +17,6 @@
         <file>images/stop.png</file>
         <file>images/toLeft.png</file>
         <file>images/toRight.png</file>
+        <file>images/logo.png</file>
     </qresource>
 </RCC>
