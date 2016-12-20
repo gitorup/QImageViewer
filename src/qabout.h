@@ -20,6 +20,7 @@ private:
     QPushButton *exitBtn;
     QLabel *infoLabel;
     QLabel *titleLabel;
+    QLabel *authorLabel;
     QTextEdit *infoTextEdit;
     void initUiComponent(void);
 

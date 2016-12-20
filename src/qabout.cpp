@@ -16,6 +16,7 @@ QAbout::QAbout(QWidget *parent) : QWidget(parent)
 QAbout::~QAbout()
 {
     SAFE_FREE(titleLabel);
+    SAFE_FREE(authorLabel);
     SAFE_FREE(infoLabel);
     SAFE_FREE(infoTextEdit);
     SAFE_FREE(exitBtn);
@@ -36,14 +37,20 @@ void QAbout::initUiComponent(void)
 
     titleLabel = new QLabel(this);
     titleLabel->setText(tr("QImageViewer for Windows(Version v1.1.2)"));
-    titleLabel->setGeometry(20, 10, label_w, btn_h);
+    titleLabel->setGeometry(20, 10, label_w, label_h);
 
     QFont titleFont("Microsoft YaHei", 10, QFont::Bold);
     titleLabel->setFont(titleFont);
 
+    authorLabel = new QLabel(this);
+    authorLabel->setText(tr("Author: gitorup"));
+    authorLabel->setGeometry(100, 30, label_w, label_h);
+
     infoLabel = new QLabel(this);
-    infoLabel->setText(tr("Author: gitorup\n[https://github.com/gitorup/QImageViewer]"));
-    infoLabel->setGeometry(20, 40, label_w, label_h * 2);
+    infoLabel->setOpenExternalLinks(true);
+    infoLabel->setText(tr("<a href=\"https://github.com/gitorup/QImageViewer\">"
+                          "[https://github.com/gitorup/QImageViewer]"));
+    infoLabel->setGeometry(40, 50, label_w, label_h);
 
     QString info;
     info.append("                                     Statement\n");
