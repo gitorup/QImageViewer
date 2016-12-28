@@ -10,6 +10,7 @@ SOURCES += \
 RESOURCES += \
     images.qrc
 
-INCLUDEPATH += src
+INCLUDEPATH += mainwindow
 
-include(src/src.pri)
+include(mainwindow/mainwindow.pri)
+include(imageviewer/imageviewer.pri)

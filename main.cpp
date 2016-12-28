@@ -1,15 +1,15 @@
 #include <QApplication>
 
-#include "qimageviewer.h"
+#include "mainwindow.h"
 
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
 
-    QImageViewer imageViewer;
-    imageViewer.resize(640,480);
-    imageViewer.setWindowIcon(QIcon(":/images/logo.png"));
-    imageViewer.show();
+    MainWindow mainWindow;
+    mainWindow.resize(640, 480);
+    mainWindow.setWindowIcon(QIcon(":/images/logo.png"));
+    mainWindow.show();
 
     return app.exec();
 }
