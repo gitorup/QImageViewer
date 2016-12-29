@@ -71,32 +71,98 @@ int QImageViewer::delImageFile(void)
 
 int QImageViewer::last(void)
 {
+    if (index < 0) {
+        QMessageBox::information(parent,
+                                 tr("Error"),
+                                 tr("Open a image, please!"));
+        return -1;
+    }
 
+    while (1) {
+        index = index - 1;
+        int count = fileInfoList.count();
+        if (index < 0) {
+            QMessageBox::information(parent, tr("Tip"), tr("This is the first image."));
+            index = count - 1;
+        }
+
+        filename.clear();
+        filename.append(path);
+        filename += "/";
+        filename += fileInfoList.at(index).fileName();
+
+        if (!QFile(filename).exists()) {
+            fileInfoList.removeAt(index);
+            continue;
+        } else {
+            break;
+        }
+    }
+
+    /* load file info */
+    return upgradeFileInfo(filename, angle, 1);
 }
 
 int QImageViewer::next(void)
 {
+    if (index < 0) {
+        QMessageBox::information(parent,
+                                 tr("Error"),
+                                 tr("Open a image, please!"));
+        return -1;
+    }
 
+    while (1) {
+        index = index + 1;
+        int count = fileInfoList.count();
+        if (index == count) {
+            QMessageBox::information(parent, tr("Tip"), tr("This is the last image."));
+            index = 0;
+        }
+
+        filename.clear();
+        filename.append(path);
+        filename += "/";
+        filename += fileInfoList.at(index).fileName();
+
+        if (!QFile(filename).exists()) {
+            fileInfoList.removeAt(index);
+            continue;
+        } else {
+            break;
+        }
+    }
+
+    /* load file info */
+    return upgradeFileInfo(filename, angle, 1);
 }
 
 int QImageViewer::zoomIn(void)
 {
-
+    return upgradeFileInfo(filename, angle, 1.2);
 }
 
 int QImageViewer::zoomOut(void)
 {
-
+    return upgradeFileInfo(filename, angle, 0.8);
 }
 
 int QImageViewer::spinToRight(void)
 {
+    angle += 3;
+    angle = angle % 4;
 
+    /* load file info */
+    return upgradeFileInfo(filename, angle, 1);
 }
 
 int QImageViewer::spinToLeft(void)
 {
+    angle += 1;
+    angle = angle % 4;
 
+    /* load file info */
+    return upgradeFileInfo(filename, angle, 1);
 }
 
 void QImageViewer::initImageResource(void)
@@ -120,21 +186,8 @@ int QImageViewer::loadImageResource(void)
     /* get file list */
     getFileInfoList();
 
-    index = getFileCurIndex();
-    fileInfo = QFileInfo(filename);
-    path = QFileInfo(filename).absolutePath();
-    dir = QFileInfo(filename).absoluteDir();
-
-    if (!image.load(filename)) {
-        QMessageBox::information(this,
-                                 tr("Error"),
-                                 tr("Open file error"));
-        return -1;
-    }
-
-    /* upgrade pixmap */
-    pixmap = QPixmap::fromImage(image);
-    size = pixmap.size();
+    /* load file info */
+    upgradeFileInfo(filename, angle, 1);
 
     return 0;
 }
@@ -151,7 +204,25 @@ int QImageViewer::loadImageResource(QString &caption,
     /* get file list */
     getFileInfoList();
 
-    index = getFileCurIndex();
+    /* load file info */
+    upgradeFileInfo(filename, angle, 1);
+
+    return 0;
+}
+
+int QImageViewer::upgradeFileInfo(QString &filename,int angle,int sizeScale)
+{
+    QImage imgRotate;
+    QMatrix matrix;
+    QImage imgScaled;
+
+    if (filename.isEmpty()) {
+        QMessageBox::information(this,
+                                 tr("Error"),
+                                 tr("Open a image, please!"));
+        return -1;
+    }
+
     fileInfo = QFileInfo(filename);
     path = QFileInfo(filename).absolutePath();
     dir = QFileInfo(filename).absoluteDir();
@@ -163,9 +234,21 @@ int QImageViewer::loadImageResource(QString &caption,
         return -1;
     }
 
+    /* modify angle */
+    matrix.rotate(angle * 90);
+    imgRotate = image.transformed(matrix);
+
+    /* modify scale */
+    imgScaled = imgRotate.scaled(size.width() * sizeScale,
+                                 size.height() * sizeScale,
+                                 Qt::KeepAspectRatio);
+
     /* upgrade pixmap */
-    pixmap = QPixmap::fromImage(image);
+    pixmap = QPixmap::fromImage(imgScaled);
     size = pixmap.size();
+
+    /* upgrade index */
+    index = getFileCurIndex();
 
     return 0;
 }
@@ -195,13 +278,14 @@ int QImageViewer::getFileInfoList(void)
 int QImageViewer::getFileCurIndex(void)
 {
     QFileInfo info;
+    int j;
 
     if (fileInfoList.count() <= 0) {
         qDebug() << "fileInfoList is NULL!";
         return -1;
     }
 
-    for (int j = 0; j < fileInfoList.count(); j++) {
+    for (j = 0; j < fileInfoList.count(); j++) {
         info = fileInfoList.at(j);
         if (info.fileName() == fileInfo.fileName()) {
             break;

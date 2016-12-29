@@ -14,10 +14,7 @@ class QImageViewer : public QWidget
     Q_OBJECT
 public:
     explicit QImageViewer(QWidget *parent = 0);
-    explicit QImageViewer(QWidget *parent,
-                          QString &caption,
-                          QString &dir,
-                          QString &filer);
+    explicit QImageViewer(QWidget *parent,QString &caption,QString &dir,QString &filer);
     ~QImageViewer();
 
     QWidget *parent;
@@ -35,9 +32,7 @@ public:
     QPixmap pixmap;
 
     /* open a file */
-    int openImageFile(QString &caption,
-                      QString &dir,
-                      QString &filer);
+    int openImageFile(QString &caption,QString &dir,QString &filer);
 
     /* close file */
     int closeImageFile(void);
@@ -61,13 +56,12 @@ private:
 
     /* open a image */
     int loadImageResource(void);
-    int loadImageResource(QString &caption,
-                          QString &dir,
-                          QString &filer);
+    int loadImageResource(QString &caption,QString &dir,QString &filer);
 
     /* get file info list from current path */
     int getFileInfoList(void);
     int getFileCurIndex(void);
+    int upgradeFileInfo(QString &filename,int angle,int sizeScale);
 
 public slots:
 };
