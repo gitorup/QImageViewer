@@ -6,7 +6,7 @@
 
 QImageViewer::QImageViewer(QWidget *parent) : QWidget(parent)
 {
-
+    this->parent = parent;
 }
 
 QImageViewer::QImageViewer(QWidget *parent,
@@ -14,22 +14,22 @@ QImageViewer::QImageViewer(QWidget *parent,
                            QString &dir,
                            QString &filer)
 {
+    this->parent = parent;
     initImageResource();
-    loadImageResource(parent, caption, dir, filer);
+    loadImageResource(caption, dir, filer);
 }
 
 QImageViewer::~QImageViewer(void)
 {
-
+    this->parent = NULL;
 }
 
-int QImageViewer::openImageFile(QWidget *parent,
-                                QString &caption,
+int QImageViewer::openImageFile(QString &caption,
                                 QString &dir,
                                 QString &filer)
 {
     initImageResource();
-    return loadImageResource(parent, caption, dir, filer);
+    return loadImageResource(caption, dir, filer);
 }
 
 int QImageViewer::closeImageFile(void)
@@ -77,8 +77,7 @@ int QImageViewer::loadImageResource(void)
     return 0;
 }
 
-int QImageViewer::loadImageResource(QWidget *parent,
-                                    QString &caption,
+int QImageViewer::loadImageResource(QString &caption,
                                     QString &directory,
                                     QString &filer)
 {

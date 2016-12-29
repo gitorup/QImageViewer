@@ -20,6 +20,8 @@ public:
                           QString &filer);
     ~QImageViewer();
 
+    QWidget *parent;
+
     int index;
     int angle;
     QSize size;
@@ -33,15 +35,16 @@ public:
     QPixmap pixmap;
 
     /* open a file */
-    int openImageFile(QWidget *parent,
-                      QString &caption,
+    int openImageFile(QString &caption,
                       QString &dir,
                       QString &filer);
 
     /* close file */
     int closeImageFile(void);
 
-
+    /* file skipping */
+    int last();
+    int next();
 
 private:
     /* init param */
@@ -49,8 +52,7 @@ private:
 
     /* open a image */
     int loadImageResource(void);
-    int loadImageResource(QWidget *parent,
-                          QString &caption,
+    int loadImageResource(QString &caption,
                           QString &dir,
                           QString &filer);
 
