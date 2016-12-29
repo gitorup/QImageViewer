@@ -1,7 +1,7 @@
 #ifndef QIMAGEVIEWER_H
 #define QIMAGEVIEWER_H
 
-#include <QObject>
+#include <QWidget>
 #include <QImage>
 #include <QPixmap>
 #include <QDir>
@@ -9,23 +9,45 @@
 #include <QFileInfo>
 #include <QFileInfoList>
 
-class QImageViewer : public QObject
+class QImageViewer : public QWidget
 {
     Q_OBJECT
 public:
-    explicit QImageViewer(QObject *parent = 0);
+    explicit QImageViewer(QWidget *parent = 0);
+    explicit QImageViewer(QWidget *parent,
+                          QString &caption,
+                          QString &dir,
+                          QString &filer);
     ~QImageViewer();
 
-    int imageIndex;
-    int imageAngle;
-    QSize imageSize;
-    QString imageName;
-    QString imagePath;
-    QDir imageDir;
-    QFileInfo imageInfo;
-    QFileInfoList imgInfoList;
+    int index;
+    int angle;
+    QSize size;
+    QString filename;
+    QString path;
+    QDir dir;
+    QFileInfo fileInfo;
+    QFileInfoList fileInfoList;
+
+    /* open a file */
+    int openImageFile(QWidget *parent,
+                      QString &caption,
+                      QString &dir,
+                      QString &filer);
 
 private:
+    /* init param */
+    void initImageResource(void);
+
+    /* open a image */
+    int loadImageResource(void);
+    int loadImageResource(QWidget *parent,
+                          QString &caption,
+                          QString &dir,
+                          QString &filer);
+
+    /* get file info list from current path */
+    void getFileInfoList(void);
 
 public slots:
 };
