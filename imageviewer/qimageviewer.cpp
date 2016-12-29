@@ -38,6 +38,67 @@ int QImageViewer::closeImageFile(void)
     return 0;
 }
 
+int QImageViewer::delImageFile(void)
+{
+    if (filename.isEmpty()) {
+        QMessageBox::information(parent,
+                                 tr("Error"),
+                                 tr("Open a image, please!"));
+        return -1;
+    }
+
+    QMessageBox message(QMessageBox::Warning,
+                        tr("Warning"),
+                        tr("Do you want to delete this image?"),
+                        QMessageBox::Yes|QMessageBox::No,
+                        NULL);
+    if (message.exec() == QMessageBox::No) {
+        return 0;
+    }
+
+    if (QFile::remove(filename)) {
+        qDebug() << "remove success: " << filename;
+    } else {
+        qDebug() << "remove failed: " << filename;
+        return -1;
+    }
+
+    /* delete from list */
+    fileInfoList.removeAt(index);
+
+    return 0;
+}
+
+int QImageViewer::last(void)
+{
+
+}
+
+int QImageViewer::next(void)
+{
+
+}
+
+int QImageViewer::zoomIn(void)
+{
+
+}
+
+int QImageViewer::zoomOut(void)
+{
+
+}
+
+int QImageViewer::spinToRight(void)
+{
+
+}
+
+int QImageViewer::spinToLeft(void)
+{
+
+}
+
 void QImageViewer::initImageResource(void)
 {
     index = -1;
@@ -56,12 +117,13 @@ int QImageViewer::loadImageResource(void)
         return -1;
     }
 
+    /* get file list */
+    getFileInfoList();
+
+    index = getFileCurIndex();
     fileInfo = QFileInfo(filename);
     path = QFileInfo(filename).absolutePath();
     dir = QFileInfo(filename).absoluteDir();
-
-    /* get file list */
-    getFileInfoList();
 
     if (!image.load(filename)) {
         QMessageBox::information(this,
@@ -86,12 +148,13 @@ int QImageViewer::loadImageResource(QString &caption,
         return -1;
     }
 
+    /* get file list */
+    getFileInfoList();
+
+    index = getFileCurIndex();
     fileInfo = QFileInfo(filename);
     path = QFileInfo(filename).absolutePath();
     dir = QFileInfo(filename).absoluteDir();
-
-    /* get file list */
-    getFileInfoList();
 
     if (!image.load(filename)) {
         QMessageBox::information(parent,
@@ -107,7 +170,7 @@ int QImageViewer::loadImageResource(QString &caption,
     return 0;
 }
 
-void QImageViewer::getFileInfoList(void)
+int QImageViewer::getFileInfoList(void)
 {
     QFileInfo info;
     QFileInfoList infoList = dir.entryInfoList(QDir::Files);
@@ -126,11 +189,32 @@ void QImageViewer::getFileInfoList(void)
         }
     }
 
+    return 0;
+}
+
+int QImageViewer::getFileCurIndex(void)
+{
+    QFileInfo info;
+
+    if (fileInfoList.count() <= 0) {
+        qDebug() << "fileInfoList is NULL!";
+        return -1;
+    }
+
     for (int j = 0; j < fileInfoList.count(); j++) {
         info = fileInfoList.at(j);
         if (info.fileName() == fileInfo.fileName()) {
-            index = j;
-            qDebug() << "Current fileInfo index: " << index;
+            break;
         }
     }
+
+    if (j >= fileInfoList.count()) {
+        qDebug() << "Not find current file!";
+        return -1;
+    }
+
+    index = j;
+    qDebug() << "Current fileInfo index: " << index;
+
+    return index;
 }

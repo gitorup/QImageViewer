@@ -42,9 +42,18 @@ public:
     /* close file */
     int closeImageFile(void);
 
+    /* delete file */
+    int delImageFile(void);
+
     /* file skipping */
-    int last();
-    int next();
+    int last(void);
+    int next(void);
+
+    /* change image */
+    int zoomIn(void);
+    int zoomOut(void);
+    int spinToRight(void);
+    int spinToLeft(void);
 
 private:
     /* init param */
@@ -57,7 +66,8 @@ private:
                           QString &filer);
 
     /* get file info list from current path */
-    void getFileInfoList(void);
+    int getFileInfoList(void);
+    int getFileCurIndex(void);
 
 public slots:
 };
