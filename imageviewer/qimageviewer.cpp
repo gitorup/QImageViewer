@@ -1,6 +1,7 @@
 #include "qimageviewer.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QDebug>
 
 QImageViewer::QImageViewer(QWidget *parent) : QWidget(parent)
@@ -31,14 +32,20 @@ int QImageViewer::openImageFile(QWidget *parent,
     return loadImageResource(parent, caption, dir, filer);
 }
 
+int QImageViewer::closeImageFile(void)
+{
+    initImageResource();
+    return 0;
+}
+
 void QImageViewer::initImageResource(void)
 {
     index = -1;
     angle = 0;
+    size = QSize(0, 0);
 
     filename.clear();
     path.clear();
-    fileInfoList.clear();
 }
 
 int QImageViewer::loadImageResource(void)
@@ -55,6 +62,17 @@ int QImageViewer::loadImageResource(void)
 
     /* get file list */
     getFileInfoList();
+
+    if (!image.load(filename)) {
+        QMessageBox::information(this,
+                                 tr("Error"),
+                                 tr("Open file error"));
+        return -1;
+    }
+
+    /* upgrade pixmap */
+    pixmap = QPixmap::fromImage(image);
+    size = pixmap.size();
 
     return 0;
 }
@@ -76,15 +94,29 @@ int QImageViewer::loadImageResource(QWidget *parent,
     /* get file list */
     getFileInfoList();
 
+    if (!image.load(filename)) {
+        QMessageBox::information(parent,
+                                 tr("Error"),
+                                 tr("Open file error"));
+        return -1;
+    }
+
+    /* upgrade pixmap */
+    pixmap = QPixmap::fromImage(image);
+    size = pixmap.size();
+
     return 0;
 }
 
 void QImageViewer::getFileInfoList(void)
 {
+    QFileInfo info;
     QFileInfoList infoList = dir.entryInfoList(QDir::Files);
     qDebug() << "GET:" << infoList.count() << dir;
 
-    QFileInfo info;
+    /* clear list */
+    fileInfoList.clear();
+
     for (int i = 0; i < infoList.count(); i++) {
         info = infoList.at(i);
         QString suffix = info.suffix();

@@ -29,11 +29,19 @@ public:
     QFileInfo fileInfo;
     QFileInfoList fileInfoList;
 
+    QImage image;
+    QPixmap pixmap;
+
     /* open a file */
     int openImageFile(QWidget *parent,
                       QString &caption,
                       QString &dir,
                       QString &filer);
+
+    /* close file */
+    int closeImageFile(void);
+
+
 
 private:
     /* init param */
