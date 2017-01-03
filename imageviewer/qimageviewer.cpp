@@ -192,8 +192,6 @@ int QImageViewer::loadImageResource(const QString &caption,
         return -1;
     }
 
-    qDebug() << "filename: " << filename;
-
     /* get file list */
     getFileInfoList();
 
@@ -245,7 +243,6 @@ int QImageViewer::getFileInfoList(void)
 {
     QFileInfo info;
     QFileInfoList infoList;
-    qDebug() << "GET:" << infoList.count() << dir;
 
     path = QFileInfo(filename).absolutePath();
     dir = QFileInfo(filename).absoluteDir();
@@ -290,7 +287,7 @@ int QImageViewer::getFileCurIndex(void)
     }
 
     index = j;
-    qDebug() << "Current fileInfo index: " << index;
+    //qDebug() << "Current fileInfo index: " << index;
 
     return index;
 }
