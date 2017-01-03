@@ -140,7 +140,7 @@ void MainWindow::toLessenActionTriggered(void)
 
 void MainWindow::deleteActionTriggered(void)
 {
-    if (imageViewer->filename.isEmpty()) {
+    if (!QFile(imageViewer->filename).exists()) {
         QMessageBox::information(this,
                                  tr("Error"),
                                  tr("Open a image, please!"));
