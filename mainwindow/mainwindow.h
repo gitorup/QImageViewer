@@ -10,6 +10,7 @@
 #include <QFileInfoList>
 
 #include "qabout.h"
+#include "qimageviewer.h"
 
 class MainWindow : public QMainWindow
 {
@@ -25,20 +26,15 @@ private:
     QLabel *imageLabel;
     QAbout aboutWidget;
 
-    int index;
-    int imageAngle;
-    QSize imageSize;
-    QString filename;
-    QString path;
-    QFileInfoList imgInfoList;
+    /* new class */
+    QImageViewer *imageViewer;
 
     void initMainWindow(void);
     void initUiComponent(void);
     void setQImageViewerWidget(void);
     void setWindowComponet(void);
-    void initImgInfoList(QFileInfoList &imgInfoList);
     void initImageResource(void);
-    void loadImageResource(QString &filename);
+    void loadImageResource(void);
 
     QAction *openAction;
     QAction *closeAction;

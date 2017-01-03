@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "qimageviewer.h"
 
 #include <QWidget>
 #include <QImage>
@@ -10,7 +9,6 @@
 #include <QDebug>
 #include <QScrollArea>
 #include <QGridLayout>
-#include <QImageReader>
 #include <QErrorMessage>
 #include <QApplication>
 
@@ -25,250 +23,124 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     /* init resource */
     initImageResource();
 
-    //qDebug() << QImageReader::supportedImageFormats();
+    /* create imageViewer */
+    imageViewer = new QImageViewer(this);
 }
 
 void MainWindow::initImageResource(void)
 {
-    index = -1;
-    filename.clear();
-
     imageLabel->clear();
     imageLabel->resize(QSize(200, 100));
     setWindowTitle(tr("QImageViewer"));
 }
 
-void MainWindow::loadImageResource(QString &filename)
+void MainWindow::loadImageResource(void)
 {
-    QImage image;
-    QPixmap pixmap;
-
-    if (!image.load(filename)) {
-        QMessageBox::information(this,
-                                 tr("Error"),
-                                 tr("Open file error"));
-        return ;
-    }
-
-    pixmap = QPixmap::fromImage(image);
-    imageSize = pixmap.size();
-    imageLabel->setPixmap(pixmap);
-    imageLabel->resize(imageSize);
-    setWindowTitle(QFileInfo(filename).fileName() + tr(" - QImageViewer"));
+    imageLabel->setPixmap(imageViewer->pixmap);
+    imageLabel->resize(imageViewer->size);
+    setWindowTitle(QFileInfo(imageViewer->filename).fileName() + tr(" - QImageViewer"));
 }
 
 void MainWindow::openActionTriggered(void)
 {
-    filename = QFileDialog::getOpenFileName(this, tr("Select image:"),
-        "D:\\Documents\\Pictures", tr("Images (*.jpg *.jpeg *.png *.bmp *.gif)"));
-    if (filename.isEmpty()) {
+    int ret = imageViewer->openImageFile(tr("Select image:"),
+                                         "D:\\Documents\\Pictures",
+                                         tr("Images (*.jpg *.jpeg *.png *.bmp *.gif)"));
+    if (ret) {
+        QMessageBox::information(this, tr("Error"), tr("Open a file failed!"));
         return ;
     }
 
-    /* get file list */
-    path = QFileInfo(filename).absolutePath();
-    initImgInfoList(imgInfoList);
-
-    /* load image */
-    loadImageResource(filename);
+    loadImageResource();
 }
 
 void MainWindow::closeActionTriggered(void)
 {
     initImageResource();
+    imageViewer->closeImageFile();
 }
 
 void MainWindow::lastActionTriggered(void)
 {
-    if (index < 0) {
+    int ret = imageViewer->last();
+    if (ret) {
         QMessageBox::information(this,
                                  tr("Error"),
                                  tr("Open a image, please!"));
         return ;
     }
 
-    while (1) {
-        index = index - 1;
-        int count = imgInfoList.count();
-        //qDebug() << "left count: " << count << "index: " << index;
-        if (index < 0) {
-            QMessageBox::information(this, tr("Tip"), tr("This is the first image."));
-            index = count - 1;
-        }
-
-        filename.clear();
-        filename.append(path);
-        filename += "/";
-        filename += imgInfoList.at(index).fileName();
-        //qDebug() << "filname: " << filename;
-
-        if (!QFile(filename).exists()) {
-            imgInfoList.removeAt(index);
-            continue;
-        } else {
-            break;
-        }
-    }
-
-    loadImageResource(filename);
+    loadImageResource();
 }
 
 void MainWindow::nextActionTriggered(void)
 {
-    if (index < 0) {
+    int ret = imageViewer->next();
+    if (ret) {
         QMessageBox::information(this,
                                  tr("Error"),
                                  tr("Open a image, please!"));
         return ;
     }
 
-    while (1) {
-        index = index + 1;
-        int count = imgInfoList.count();
-        //qDebug() << "right count: " << count << "index: " << index;
-        if (index == count) {
-            QMessageBox::information(this, tr("Tip"), tr("This is the last image."));
-            index = 0;
-        }
-
-        filename.clear();
-        filename.append(path);
-        filename += "/";
-        filename += imgInfoList.at(index).fileName();
-        //qDebug() << "filname: " << filename;
-
-        if (!QFile(filename).exists()) {
-            imgInfoList.removeAt(index);
-            continue;
-        } else {
-            break;
-        }
-    }
-
-    loadImageResource(filename);
+    loadImageResource();
 }
 
 void MainWindow::toLeftActionTriggered(void)
 {
-    if (filename.isEmpty()) {
+    int ret = imageViewer->spinToLeft();
+    if (ret) {
         QMessageBox::information(this,
                                  tr("Error"),
                                  tr("Open a image, please!"));
         return ;
     }
 
-    QImage imgRotate;
-    QMatrix matrix;
-    QPixmap pixmap;
-    QImage image;
-
-    imageAngle += 3;
-    imageAngle = imageAngle % 4;
-    qDebug() << "angle:%d" << imageAngle;
-    matrix.rotate(imageAngle * 90);
-
-    image.load(filename);
-    imgRotate = image.transformed(matrix);
-    pixmap = QPixmap::fromImage(imgRotate);
-    imageSize = pixmap.size();
-
-    imageLabel->resize(imgRotate.size());
-    imageLabel->setPixmap(pixmap);
+    loadImageResource();
 }
 
 void MainWindow::toRightActionTriggered(void)
 {
-    if (filename.isEmpty()) {
+    int ret = imageViewer->spinToRight();
+    if (ret) {
         QMessageBox::information(this,
                                  tr("Error"),
                                  tr("Open a image, please!"));
         return ;
     }
 
-    QImage imgRotate;
-    QMatrix matrix;
-    QPixmap pixmap;
-    QImage image;
-
-    imageAngle += 1;
-    imageAngle = imageAngle % 4;
-    //qDebug() << "angle:%d" << imageAngle;
-    matrix.rotate(imageAngle * 90);
-
-    image.load(filename);
-    imgRotate = image.transformed(matrix);
-    pixmap = QPixmap::fromImage(imgRotate);
-    imageSize = pixmap.size();
-
-    imageLabel->resize(imgRotate.size());
-    imageLabel->setPixmap(pixmap);
+    loadImageResource();
 }
 
 void MainWindow::toEnlargeActionTriggered(void)
 {
-    if (filename.isEmpty()) {
+    int ret = imageViewer->zoomIn();
+    if (ret) {
         QMessageBox::information(this,
                                  tr("Error"),
                                  tr("Open a image, please!"));
         return ;
     }
 
-    QImage imgScaled;
-    QPixmap pixmap;
-    QImage image;
-    QImage imgRotate;
-    QMatrix matrix;
-
-    image.load(filename);
-    matrix.rotate(imageAngle * 90);
-    imgRotate = image.transformed(matrix);
-
-    imgScaled = imgRotate.scaled(imageSize.width() * 1.2,
-                             imageSize.height() * 1.2,
-                             Qt::KeepAspectRatio);
-
-    pixmap = QPixmap::fromImage(imgScaled);
-    imageSize = pixmap.size();
-    //qDebug() << "width:%d, height:%d" << imageSize.width() << imageSize.height();
-
-    imageLabel->setPixmap(pixmap);
-    imageLabel->resize(imageSize);
+    loadImageResource();
 }
 
 void MainWindow::toLessenActionTriggered(void)
 {
-    if (filename.isEmpty()) {
+    int ret = imageViewer->zoomOut();
+    if (ret) {
         QMessageBox::information(this,
                                  tr("Error"),
                                  tr("Open a image, please!"));
         return ;
     }
 
-    QImage imgScaled;
-    QPixmap pixmap;
-    QImage image;
-    QImage imgRotate;
-    QMatrix matrix;
-
-    image.load(filename);
-    matrix.rotate(imageAngle * 90);
-    imgRotate = image.transformed(matrix);
-
-    imgScaled = imgRotate.scaled(imageSize.width() * 0.8,
-                             imageSize.height() * 0.8,
-                             Qt::KeepAspectRatio);
-
-    pixmap = QPixmap::fromImage(imgScaled);
-    imageSize = pixmap.size();
-    //qDebug() << "width:%d, height:%d" << imageSize.width() << imageSize.height();
-
-    imageLabel->setPixmap(pixmap);
-    imageLabel->resize(imageSize);
+    loadImageResource();
 }
 
 void MainWindow::deleteActionTriggered(void)
 {
-    if (filename.isEmpty()) {
+    if (imageViewer->filename.isEmpty()) {
         QMessageBox::information(this,
                                  tr("Error"),
                                  tr("Open a image, please!"));
@@ -284,51 +156,21 @@ void MainWindow::deleteActionTriggered(void)
         return ;
     }
 
-    if (QFile::remove(filename)) {
-        qDebug() << "remove success: " << filename;
-    } else {
-        qDebug() << "remove failed: " << filename;
+    int ret = imageViewer->delImageFile();
+    if (ret) {
+        QMessageBox::warning(this,
+                             tr("Error"),
+                             tr("Delete a image failed!"));
+        return ;
     }
 
-    imageLabel->clear();
-    imageLabel->resize(QSize(200, 100));
-    setWindowTitle(tr("QImageViewer"));
-}
-
-void MainWindow::initImgInfoList(QFileInfoList &imgInfoList)
-{
-    QDir dir = QFileInfo(filename).absolutePath();
-    QFileInfoList infoList = dir.entryInfoList(QDir::Files);
-    qDebug() << "GET:" << infoList.count() << dir;
-
-    QFileInfo info;
-    for (int i = 0; i < infoList.count(); i++) {
-        info = infoList.at(i);
-        //qDebug() << i << info.absolutePath();
-        QString suffix = info.suffix();
-
-        if (suffix == "jpg" || suffix == "bmp" || suffix == "png"
-            || suffix == "gif" || suffix == "jpeg") {
-            imgInfoList.append(info);
-            //qDebug() << "getImgInfoList:" << i << info.absolutePath() << info.suffix();
-        }
-    }
-
-    QFileInfo curImageInfo = QFileInfo(filename);
-    for (int j = 0; j < imgInfoList.count(); j++) {
-        info = imgInfoList.at(j);
-        if (info.fileName() == curImageInfo.fileName()) {
-            index = j;
-            qDebug() << "curImage index: " << index;
-        }
-    }
+    initImageResource();
 }
 
 void MainWindow::setQImageViewerWidget(void)
 {
     /* label show image */
     imageLabel = new QLabel();
-    imageAngle = 0;
 
     QScrollArea *imageScrollArea = new QScrollArea();
     imageScrollArea->setAlignment(Qt::AlignCenter);

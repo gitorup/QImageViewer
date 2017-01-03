@@ -3,10 +3,12 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDebug>
+#include <QImageReader>
 
 QImageViewer::QImageViewer(QWidget *parent) : QWidget(parent)
 {
     this->parent = parent;
+    initImageResource();
 }
 
 QImageViewer::QImageViewer(QWidget *parent,
@@ -24,9 +26,9 @@ QImageViewer::~QImageViewer(void)
     this->parent = NULL;
 }
 
-int QImageViewer::openImageFile(QString &caption,
-                                QString &dir,
-                                QString &filer)
+int QImageViewer::openImageFile(QString caption,
+                                QString dir,
+                                QString filer)
 {
     initImageResource();
     return loadImageResource(caption, dir, filer);
@@ -41,19 +43,7 @@ int QImageViewer::closeImageFile(void)
 int QImageViewer::delImageFile(void)
 {
     if (filename.isEmpty()) {
-        QMessageBox::information(parent,
-                                 tr("Error"),
-                                 tr("Open a image, please!"));
         return -1;
-    }
-
-    QMessageBox message(QMessageBox::Warning,
-                        tr("Warning"),
-                        tr("Do you want to delete this image?"),
-                        QMessageBox::Yes|QMessageBox::No,
-                        NULL);
-    if (message.exec() == QMessageBox::No) {
-        return 0;
     }
 
     if (QFile::remove(filename)) {
@@ -72,9 +62,6 @@ int QImageViewer::delImageFile(void)
 int QImageViewer::last(void)
 {
     if (index < 0) {
-        QMessageBox::information(parent,
-                                 tr("Error"),
-                                 tr("Open a image, please!"));
         return -1;
     }
 
@@ -177,6 +164,7 @@ void QImageViewer::initImageResource(void)
 
 int QImageViewer::loadImageResource(void)
 {
+    //qDebug() << QImageReader::supportedImageFormats();
     filename = QFileDialog::getOpenFileName(this, tr("Select image:"),
         "D:\\Documents\\Pictures", tr("Images (*.jpg *.jpeg *.png *.bmp *.gif)"));
     if (filename.isEmpty()) {
@@ -192,9 +180,9 @@ int QImageViewer::loadImageResource(void)
     return 0;
 }
 
-int QImageViewer::loadImageResource(QString &caption,
-                                    QString &directory,
-                                    QString &filer)
+int QImageViewer::loadImageResource(QString caption,
+                                    QString directory,
+                                    QString filer)
 {
     filename = QFileDialog::getOpenFileName(parent,caption,directory,filer);
     if (filename.isEmpty()) {
