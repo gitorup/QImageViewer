@@ -236,7 +236,7 @@ void MainWindow::setWindowComponet(void)
     about->setStatusTip(tr("About QImageViewer"));
     about->setIcon(QIcon(":/images/help.png"));
 
-    QMenu *fileMenu = menuBar->addMenu(tr("&File"));
+    QMenu *fileMenu = menuBar->addMenu(tr("File"));
     fileMenu->addAction(openAction);
     fileMenu->addAction(closeAction);
     fileMenu->addSeparator();

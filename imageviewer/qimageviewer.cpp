@@ -26,9 +26,9 @@ QImageViewer::~QImageViewer(void)
     this->parent = NULL;
 }
 
-int QImageViewer::openImageFile(QString caption,
-                                QString dir,
-                                QString filer)
+int QImageViewer::openImageFile(const QString &caption,
+                                const QString &dir,
+                                const QString &filer)
 {
     initImageResource();
     return loadImageResource(caption, dir, filer);
@@ -136,7 +136,7 @@ int QImageViewer::zoomOut(void)
 
 int QImageViewer::spinToRight(void)
 {
-    angle += 3;
+    angle += 1;
     angle = angle % 4;
 
     /* load file info */
@@ -145,7 +145,7 @@ int QImageViewer::spinToRight(void)
 
 int QImageViewer::spinToLeft(void)
 {
-    angle += 1;
+    angle += 3;
     angle = angle % 4;
 
     /* load file info */
@@ -180,14 +180,16 @@ int QImageViewer::loadImageResource(void)
     return 0;
 }
 
-int QImageViewer::loadImageResource(QString caption,
-                                    QString directory,
-                                    QString filer)
+int QImageViewer::loadImageResource(const QString &caption,
+                                    const QString &directory,
+                                    const QString &filer)
 {
     filename = QFileDialog::getOpenFileName(parent,caption,directory,filer);
     if (filename.isEmpty()) {
         return -1;
     }
+
+    qDebug() << "filename: " << filename;
 
     /* get file list */
     getFileInfoList();
@@ -225,6 +227,7 @@ int QImageViewer::upgradeFileInfo(QString &filename,int angle,int sizeScale)
     /* modify angle */
     matrix.rotate(angle * 90);
     imgRotate = image.transformed(matrix);
+    size = image.size();
 
     /* modify scale */
     imgScaled = imgRotate.scaled(size.width() * sizeScale,

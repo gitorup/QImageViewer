@@ -32,7 +32,7 @@ public:
     QPixmap pixmap;
 
     /* open a file */
-    int openImageFile(QString caption,QString dir,QString filer);
+    int openImageFile(const QString &caption,const QString &dir,const QString &filer);
 
     /* close file */
     int closeImageFile(void);
@@ -56,7 +56,7 @@ private:
 
     /* open a image */
     int loadImageResource(void);
-    int loadImageResource(QString caption,QString dir,QString filer);
+    int loadImageResource(const QString &caption,const QString &dir,const QString &filer);
 
     /* get file info list from current path */
     int getFileInfoList(void);
