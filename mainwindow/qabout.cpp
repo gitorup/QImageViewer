@@ -36,7 +36,7 @@ void QAbout::initUiComponent(void)
     int btn_y = QABOUT_WIDGET_HEIGHT - btn_h;
 
     titleLabel = new QLabel(this);
-    titleLabel->setText(tr("QImageViewer for Windows(Version v1.1.2)"));
+    titleLabel->setText(tr("QImageViewer for Windows(Version v0.2.1)"));
     titleLabel->setGeometry(20, 10, label_w, label_h);
 
     QFont titleFont("Microsoft YaHei", 10, QFont::Bold);
