@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     initImageResource();
 
     /* create imageViewer */
-    imageViewer = new QImageViewer(this);
+    imageViewer = new QImageViewer();
 }
 
 void MainWindow::initImageResource(void)
