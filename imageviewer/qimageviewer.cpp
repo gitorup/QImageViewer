@@ -69,7 +69,7 @@ int QImageViewer::last(void)
         index = index - 1;
         int count = fileInfoList.count();
         if (index < 0) {
-            QMessageBox::information(parent, tr("Tip"), tr("This is the first image."));
+            QMessageBox::information(this, tr("Tip"), tr("This is the first image."));
             index = count - 1;
         }
 
@@ -103,7 +103,7 @@ int QImageViewer::next(void)
         index = index + 1;
         int count = fileInfoList.count();
         if (index == count) {
-            QMessageBox::information(parent, tr("Tip"), tr("This is the last image."));
+            QMessageBox::information(this, tr("Tip"), tr("This is the last image."));
             index = 0;
         }
 
@@ -187,7 +187,7 @@ int QImageViewer::loadImageResource(const QString &caption,
                                     const QString &directory,
                                     const QString &filer)
 {
-    filename = QFileDialog::getOpenFileName(parent,caption,directory,filer);
+    filename = QFileDialog::getOpenFileName(this,caption,directory,filer);
     if (filename.isEmpty()) {
         return -1;
     }
