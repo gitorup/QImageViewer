@@ -8,3 +8,5 @@ Qt version >= 5.0
 * switch last/next image in current directory
 * enlarge/lessen a image
 * spin a image
+* delete a image
+* save as a new image
