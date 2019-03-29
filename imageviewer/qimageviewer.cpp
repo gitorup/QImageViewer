@@ -216,23 +216,23 @@ int QImageViewer::upgradeFileInfo(QString &filename,int angle,int sizeScale)
         return -1;
     }
 
-    /* modify angle */
-    matrix.rotate(angle * 90);
-    imgRotate = image.transformed(matrix);
-
     if (size == QSize(0, 0)) {
         size = image.size();
     }
 
-    /* modify scale */
-    imgScaled = imgRotate.scaled(size.width() * sizeScale / 10,
-                                 size.height() * sizeScale / 10,
-                                 Qt::KeepAspectRatio);
+    /* modify size */
+    imgScaled = image.scaled(size.width() * sizeScale / 10,
+                             size.height() * sizeScale / 10,
+                             Qt::KeepAspectRatio);
+    if (sizeScale != 10) {
+        size = imgScaled.size();
+    }
 
-    /* upgrade pixmap */
-    pixmap = QPixmap::fromImage(imgScaled);
-    size = pixmap.size();
+    /* modify angle */
+    matrix.rotate(angle * 90);
+    imgRotate = imgScaled.transformed(matrix);
 
+    pixmap = QPixmap::fromImage(imgRotate);
     /* upgrade index */
     index = getFileCurIndex();
 
